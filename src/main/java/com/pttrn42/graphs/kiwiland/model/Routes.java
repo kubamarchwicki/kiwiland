@@ -2,6 +2,7 @@ package com.pttrn42.graphs.kiwiland.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Routes {
     private final List<Route> routes = new ArrayList<>();
@@ -28,6 +29,11 @@ public class Routes {
                 .orElseThrow(() -> new NoSuchRouteException());
     }
 
+    public Routes addRoute(Town from, Town to, Integer distance) {
+        routes.add(new Route(from, to, distance));
+        return this;
+    }
+
     public Routes addRoute(Route route) {
         routes.add(route);
         return this;
@@ -38,5 +44,20 @@ public class Routes {
         public NoSuchRouteException() {
             super("NO SUCH ROUTE");
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Routes routes1 = (Routes) o;
+        return Objects.equals(routes, routes1.routes);
+    }
+
+    @Override
+    public String toString() {
+        return "Routes{" +
+                "routes=" + routes +
+                '}';
     }
 }
