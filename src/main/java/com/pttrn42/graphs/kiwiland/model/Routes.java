@@ -1,11 +1,49 @@
 package com.pttrn42.graphs.kiwiland.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.Stack;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
 
 public class Routes {
-    private final List<Route> routes = new ArrayList<>();
+    private final Map<Town, List<Route>> routes = new HashMap<>();
+
+    public long trips(Town from, Town to) {
+        List<Set<Town>> correct = new ArrayList<>();
+
+        for (Route r: routes.getOrDefault(from, emptyList())) {
+            Set<Town> visited = new HashSet<>();
+            Stack<Town> stack = new Stack<>();
+
+            visited.add(r.from());
+            stack.push(r.to());
+
+            while (!stack.isEmpty()) {
+                Town town = stack.pop();
+                if (!visited.contains(town)) {
+                    visited.add(town);
+                    for (Route routesFromTown: routes.getOrDefault(town, emptyList())) {
+                        stack.push(routesFromTown.to());
+                    }
+                }
+
+                if (town.equals(to)) {
+                    correct.add(visited);
+                }
+
+            }
+        }
+
+        return correct.size();
+    }
 
     public String distance(Town... towns) {
         //TODO: maybe try monad?
@@ -22,7 +60,8 @@ public class Routes {
     }
 
     private Integer distance(Town from, Town to) {
-        return routes.stream()
+        return routes.values().stream()
+                .flatMap(Collection::stream)
                 .filter(route -> route.from().equals(from) && route.to().equals(to))
                 .findFirst()
                 .map(Route::distance)
@@ -30,20 +69,21 @@ public class Routes {
     }
 
     public Routes addRoute(Town from, Town to, Integer distance) {
-        routes.add(new Route(from, to, distance));
+        addRoute(new Route(from, to, distance));
         return this;
     }
 
     public Routes addRoute(Route route) {
-        routes.add(route);
+        routes.compute(route.from(),
+                (__, adjacencyList) -> isNull(adjacencyList)? List.of(route) : append(adjacencyList, route)
+        );
         return this;
     }
 
-    static class NoSuchRouteException extends RuntimeException {
-
-        public NoSuchRouteException() {
-            super("NO SUCH ROUTE");
-        }
+    private <T> List<T> append(List<T> to, T element) {
+        var list = new ArrayList<>(to);
+        list.add(element);
+        return list;
     }
 
     @Override
@@ -59,5 +99,11 @@ public class Routes {
         return "Routes{" +
                 "routes=" + routes +
                 '}';
+    }
+
+    static class NoSuchRouteException extends RuntimeException {
+        public NoSuchRouteException() {
+            super("NO SUCH ROUTE");
+        }
     }
 }
