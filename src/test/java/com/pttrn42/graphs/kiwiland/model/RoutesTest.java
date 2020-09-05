@@ -84,6 +84,20 @@ class RoutesTest {
         Assertions.assertEquals(3, trips);
     }
 
+    @Test
+    void multipleRoutes_maximumLength_returnsTwoRoutes() {
+        Routes routes = multipleRoutes();
+        var trips = routes.trips(new Town("A"), new Town("E"), length -> length < 3);
+        Assertions.assertEquals(2, trips);
+    }
+
+    @Test
+    void multipleRoutes_exactLength_returnsOneRoutes() {
+        Routes routes = multipleRoutes();
+        var trips = routes.trips(new Town("A"), new Town("E"), length -> length == 1);
+        Assertions.assertEquals(1, trips);
+    }
+
     Routes multipleRoutes() {
         Town a=new Town("A"), b=new Town("B"), c=new Town("C"), d=new Town("D"), e=new Town("E");
 

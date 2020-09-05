@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Predicate;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -17,28 +18,31 @@ public class Routes {
     private final Map<Town, List<Route>> routes = new HashMap<>();
 
     public long trips(Town from, Town to) {
+        return trips(from, to, __ -> true);
+    }
+
+    public long trips(Town from, Town to, Predicate<Integer> nbOfStopsCriteria) {
         List<Set<Town>> correct = new ArrayList<>();
 
         for (Route r: routes.getOrDefault(from, emptyList())) {
-            Set<Town> visited = new HashSet<>();
+            Set<Town> stops = new HashSet<>();
             Stack<Town> stack = new Stack<>();
 
-            visited.add(r.from());
             stack.push(r.to());
 
             while (!stack.isEmpty()) {
                 Town town = stack.pop();
-                if (!visited.contains(town)) {
-                    visited.add(town);
+                if (!stops.contains(town)) {
+                    stops.add(town);
                     for (Route routesFromTown: routes.getOrDefault(town, emptyList())) {
                         stack.push(routesFromTown.to());
                     }
                 }
 
-                if (town.equals(to)) {
-                    correct.add(visited);
+                if (town.equals(to) && nbOfStopsCriteria.test(stops.size())) {
+//                    System.out.println("stops from (" + from + ") = " + stops);
+                    correct.add(stops);
                 }
-
             }
         }
 
