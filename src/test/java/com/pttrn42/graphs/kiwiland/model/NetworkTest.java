@@ -3,12 +3,12 @@ package com.pttrn42.graphs.kiwiland.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class RoutesTest {
+class NetworkTest {
 
     // routes
     @Test
     void noRoutes_returnsNoSuchRoute() {
-        Routes routes = new Routes();
+        Network routes = new Network();
 
         var distance = routes.distance(new Town("A"), new Town("B"));
         Assertions.assertEquals("NO SUCH ROUTE", distance);
@@ -17,7 +17,7 @@ class RoutesTest {
     @Test
     void singleRoute_queryNonExistingRoute_returnsNoSuchRoute() {
         Town a=new Town("A"), b=new Town("B");
-        Routes routes = new Routes()
+        Network routes = new Network()
                 .addRoute(new Route(a, b, 5));
 
         var distance = routes.distance(a, new Town("C"));
@@ -27,7 +27,7 @@ class RoutesTest {
     @Test
     void singleRoute_returnsRouteDistance() {
         Town a=new Town("A"), b=new Town("B");
-        Routes routes = new Routes()
+        Network routes = new Network()
             .addRoute(new Route(a, b, 5));
 
         var distance = routes.distance(a, b);
@@ -38,7 +38,7 @@ class RoutesTest {
     void multipleRoutes_returnDistance() {
         Town a=new Town("A"), b=new Town("B"), c=new Town("C");
 
-        Routes routes = new Routes()
+        Network routes = new Network()
                 .addRoute(new Route(a, b, 5))
                 .addRoute(new Route(b, c, 4));
 
@@ -50,7 +50,7 @@ class RoutesTest {
     void multipleRoutes_routesNotExists_returnsNoSuchRoute() {
         Town a=new Town("A"), e=new Town("E"), d=new Town("D");
 
-        Routes routes = new Routes()
+        Network routes = new Network()
                 .addRoute(new Route(a, e, 7))
                 .addRoute(new Route(d, e, 6));
 
@@ -61,7 +61,7 @@ class RoutesTest {
     // trips
     @Test
     void noRoutes_returnsZeroTrips() {
-        Routes routes = new Routes();
+        Network routes = new Network();
 
         var trips = routes.trips(new Town("A"), new Town("B"));
         Assertions.assertEquals(0, trips);
@@ -70,7 +70,7 @@ class RoutesTest {
     @Test
     void singleRoute_returnsSingleTrip() {
         Town a=new Town("A"), b=new Town("B");
-        Routes routes = new Routes()
+        Network routes = new Network()
                 .addRoute(new Route(a, b, 5));
 
         var trips = routes.trips(new Town("A"), new Town("B"));
@@ -79,33 +79,41 @@ class RoutesTest {
 
     @Test
     void multipleRoutes_returnsThreeRoutes() {
-        Routes routes = multipleRoutes();
+        Network routes = multipleRoutes();
         var trips = routes.trips(new Town("A"), new Town("E"));
         Assertions.assertEquals(3, trips);
     }
 
     @Test
+    void multipleRoutes_cycle_returnsSingleRoute() {
+        Network routes = multipleRoutes();
+        var trips = routes.trips(new Town("A"), new Town("A"));
+        Assertions.assertEquals(1, trips);
+    }
+
+    @Test
     void multipleRoutes_maximumLength_returnsTwoRoutes() {
-        Routes routes = multipleRoutes();
-        var trips = routes.trips(new Town("A"), new Town("E"), length -> length < 3);
-        Assertions.assertEquals(2, trips);
+        Network routes = multipleRoutes();
+        var trips = routes.trips(new Town("A"), new Town("E"), stops -> stops < 3);
+        Assertions.assertEquals(1, trips);
     }
 
     @Test
     void multipleRoutes_exactLength_returnsOneRoutes() {
-        Routes routes = multipleRoutes();
-        var trips = routes.trips(new Town("A"), new Town("E"), length -> length == 1);
-        Assertions.assertEquals(1, trips);
+        Network routes = multipleRoutes();
+        var trips = routes.trips(new Town("A"), new Town("E"), stops -> stops == 3);
+        Assertions.assertEquals(2, trips);
     }
 
-    Routes multipleRoutes() {
+    Network multipleRoutes() {
         Town a=new Town("A"), b=new Town("B"), c=new Town("C"), d=new Town("D"), e=new Town("E");
 
-        return new Routes()
+        return new Network()
                 .addRoute(new Route(a, b, 1))
-                .addRoute(new Route(b, e, 2))
-                .addRoute(new Route(a, c, 3))
-                .addRoute(new Route(c, d, 4))
+                .addRoute(new Route(b, a, 1))
+                .addRoute(new Route(b, c, 2))
+                .addRoute(new Route(b, d, 3))
+                .addRoute(new Route(c, e, 4))
                 .addRoute(new Route(d, e, 5))
                 .addRoute(new Route(a, e, 10));
     }

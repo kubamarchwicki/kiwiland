@@ -1,24 +1,24 @@
 package com.pttrn42.graphs;
 
 import com.pttrn42.graphs.kiwiland.model.Route;
-import com.pttrn42.graphs.kiwiland.model.Routes;
+import com.pttrn42.graphs.kiwiland.model.Network;
 import com.pttrn42.graphs.kiwiland.model.Town;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class RoutesParser {
+public class NetworkParser {
 
-    public static Routes parse(String inputGraph) {
+    public static Network parse(String inputGraph) {
         if (Objects.isNull(inputGraph) || inputGraph.isEmpty()) {
-            return new Routes();
+            return new Network();
         }
 
-        var routes = new Routes();
+        var routes = new Network();
         Stream.of(inputGraph.split(","))
                 .map(String::trim)
-                .filter(RoutesParser::validParsableInput)
+                .filter(NetworkParser::validParsableInput)
                 .forEach(s -> routes.addRoute(tupleToRoute(s)));
 
         return routes;

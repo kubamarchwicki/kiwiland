@@ -2,8 +2,10 @@ package com.pttrn42.graphs.kiwiland.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,42 +13,42 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.function.Predicate;
 
-import static java.util.Collections.emptyList;
+import static java.util.Collections.*;
 import static java.util.Objects.isNull;
 
-public class Routes {
-    private final Map<Town, List<Route>> routes = new HashMap<>();
+public class Network {
+    private final Map<Town, List<Route>> network = new HashMap<>();
 
     public long trips(Town from, Town to) {
         return trips(from, to, __ -> true);
     }
 
     public long trips(Town from, Town to, Predicate<Integer> nbOfStopsCriteria) {
-        List<Set<Town>> correct = new ArrayList<>();
+        Set<Town> stops = new LinkedHashSet<>(), visited = new LinkedHashSet<>();
+        List<Set<Town>> correctRoutes = new ArrayList<>();
+        search(from, to, visited, stops, nbOfStopsCriteria, correctRoutes);
 
-        for (Route r: routes.getOrDefault(from, emptyList())) {
-            Set<Town> stops = new HashSet<>();
-            Stack<Town> stack = new Stack<>();
+        return correctRoutes.size();
+    }
 
-            stack.push(r.to());
-
-            while (!stack.isEmpty()) {
-                Town town = stack.pop();
-                if (!stops.contains(town)) {
-                    stops.add(town);
-                    for (Route routesFromTown: routes.getOrDefault(town, emptyList())) {
-                        stack.push(routesFromTown.to());
-                    }
-                }
-
-                if (town.equals(to) && nbOfStopsCriteria.test(stops.size())) {
-//                    System.out.println("stops from (" + from + ") = " + stops);
-                    correct.add(stops);
-                }
+    private void search(Town from, Town to, Set<Town> visited, Set<Town> stops, Predicate<Integer> nbOfStopsCriteria, List<Set<Town>> correctRoutes) {
+        visited.add(from);
+        for (Route r: network.getOrDefault(from, emptyList())) {
+//            System.out.println("routes from(" + from +"): " + r);
+            stops.add(r.to());
+            if (r.to().equals(to) && nbOfStopsCriteria.test(stops.size())) {
+                correctRoutes.add(stops);
+                return;
             }
+
+            if (!visited.contains(r.to())) {
+                search(r.to(), to, visited, stops, nbOfStopsCriteria, correctRoutes);
+            }
+
+            stops.remove(r.to());
         }
 
-        return correct.size();
+        visited.remove(from);
     }
 
     public String distance(Town... towns) {
@@ -64,7 +66,7 @@ public class Routes {
     }
 
     private Integer distance(Town from, Town to) {
-        return routes.values().stream()
+        return network.values().stream()
                 .flatMap(Collection::stream)
                 .filter(route -> route.from().equals(from) && route.to().equals(to))
                 .findFirst()
@@ -72,13 +74,13 @@ public class Routes {
                 .orElseThrow(() -> new NoSuchRouteException());
     }
 
-    public Routes addRoute(Town from, Town to, Integer distance) {
+    public Network addRoute(Town from, Town to, Integer distance) {
         addRoute(new Route(from, to, distance));
         return this;
     }
 
-    public Routes addRoute(Route route) {
-        routes.compute(route.from(),
+    public Network addRoute(Route route) {
+        network.compute(route.from(),
                 (__, adjacencyList) -> isNull(adjacencyList)? List.of(route) : append(adjacencyList, route)
         );
         return this;
@@ -94,14 +96,14 @@ public class Routes {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Routes routes1 = (Routes) o;
-        return Objects.equals(routes, routes1.routes);
+        Network routes1 = (Network) o;
+        return Objects.equals(network, routes1.network);
     }
 
     @Override
     public String toString() {
         return "Routes{" +
-                "routes=" + routes +
+                "routes=" + network +
                 '}';
     }
 
