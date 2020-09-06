@@ -13,7 +13,9 @@ public class App {
         System.out.println("Output #4: " + routes.distance(t("A"), t("E"), t("B"), t("C"), t("D")));
         System.out.println("Output #5: " + routes.distance(t("A"), t("E"), t("D")));
         System.out.println("Output #6: " + routes.trips(t("C"), t("C"), l -> l <= 3));
-        System.out.println("Output #7: " + routes.trips(t("A"), t("C"), l -> l == 4));
+//        System.out.println("Output #7: " + routes.trips(t("A"), t("C"), l -> l == 4));
+        System.out.println("Output #8: " + routes.shortest(t("A"), t("C")));
+        System.out.println("Output #9: " + routes.shortest(t("B"), t("B")));
     }
     
     static Town t(String townName) {

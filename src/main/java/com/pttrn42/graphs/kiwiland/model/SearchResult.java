@@ -19,6 +19,8 @@ public class SearchResult {
     }
 
     public long shortest() {
+        trips.forEach(System.out::println);
+
         return trips.stream()
                 .sorted(Comparator.comparing(Trip::distance))
                 .map(Trip::distance)

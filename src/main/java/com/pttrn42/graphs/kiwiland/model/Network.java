@@ -42,21 +42,23 @@ public class Network {
     private void search(Town from, Town to, Set<Town> visited, Set<Town> stops, Predicate<Integer> nbOfStopsCriteria, SearchResult results) {
         visited.add(from);
         for (Route r: network.getOrDefault(from, emptyList())) {
-//            System.out.println("routes from(" + from +"): " + r);
-            stops.add(r.to());
-            if (r.to().equals(to) && nbOfStopsCriteria.test(stops.size())) {
+            System.out.println("routes from(" + from +"): " + r);
+            if (r.to().equals(to)) {
+                stops.add(r.to());
                 System.out.println("visited = " + visited);
                 System.out.println("stops = " + stops);
-                results.append(new SearchResult.Trip(Set.copyOf(stops), _distance(visited.stream().findFirst().get(), stops.toArray(new Town[]{}))));
+                if (nbOfStopsCriteria.test(stops.size())) {
+                    results.append(new SearchResult.Trip(new LinkedHashSet<>(stops), _distance(visited.stream().findFirst().get(), stops.toArray(new Town[]{}))));
+                }
                 stops.remove(r.to());
-                return;
+                break;
             }
 
-            stops.add(r.to());
             if (!visited.contains(r.to())) {
+                stops.add(r.to());
                 search(r.to(), to, visited, stops, nbOfStopsCriteria, results);
+                stops.remove(r.to());
             }
-            stops.remove(r.to());
         }
 
         visited.remove(from);
@@ -89,6 +91,7 @@ public class Network {
     }
 
     private Integer _distance(Town from, Town to) {
+        System.out.println("Calculating route from = " + from + " to = " + to);
         return network.values().stream()
                 .flatMap(Collection::stream)
                 .filter(route -> route.from().equals(from) && route.to().equals(to))
