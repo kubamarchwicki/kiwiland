@@ -63,6 +63,12 @@ public class AssignmentExamplesTest {
         Assertions.assertEquals(9, shortest);
     }
 
+    @Test
+    void ex_10() {
+        long trips = routes.trips(t("C"), t("C"));
+        Assertions.assertEquals(7, trips);
+    }
+
     static Town t(String townName) {
         return new Town(townName);
     }

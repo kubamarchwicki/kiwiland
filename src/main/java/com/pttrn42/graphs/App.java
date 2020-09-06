@@ -21,7 +21,7 @@ public class App {
         System.out.println("Output #7:  " + routes.trips(t("A"), t("C"), l -> l == 4));
         System.out.println("Output #8:  " + routes.shortest(t("A"), t("C")));
         System.out.println("Output #9:  " + routes.shortest(t("B"), t("B")));
-        System.out.println("Output #10: ");
+//        System.out.println("Output #10: " + routes.trips(t("C"), t("C")));
     }
     
     static Town t(String townName) {

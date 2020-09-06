@@ -5,7 +5,10 @@ import com.pttrn42.graphs.kiwiland.model.Route;
 import com.pttrn42.graphs.kiwiland.model.SearchResult;
 import com.pttrn42.graphs.kiwiland.model.Town;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -14,7 +17,7 @@ import static java.util.Collections.emptyList;
 
 class FindPathsWithCyclesSearch implements Search {
     private final static Logger LOG = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    private final static Predicate<Integer> ALLOW_MULTIPLE_LOOPS = stackSize -> stackSize < 10;
+    private final static Predicate<Integer> ALLOW_MULTIPLE_LOOPS = stackSize -> stackSize < 15;
     private final Graph networkGraph;
     private final Traversal traversalDelegate;
 
@@ -43,10 +46,13 @@ class FindPathsWithCyclesSearch implements Search {
             LOG.finer(String.format("routes from(%s): %s", current, r));
 
             if (last.equals(r.to()) && nbOfStopsCriteria.test(stack.size())) {
-                results.append(new LinkedHashSet<>(stack), traversalDelegate.distance(stack, last));
+                List<Town> completeRoute = new ArrayList<>(stack);
+                completeRoute.add(r.to());
+                results.append(new ArrayList<>(completeRoute), traversalDelegate.distance(completeRoute));
             }
 
-            if (!stack.contains(r.to()) || ALLOW_MULTIPLE_LOOPS.and(nbOfStopsCriteria.negate()).test(stack.size())) {
+            if (!stack.contains(r.to())
+                    || ALLOW_MULTIPLE_LOOPS.and(nbOfStopsCriteria.negate()).test(stack.size())) {
                 stack.add(r.to());
                 search(stack, last, nbOfStopsCriteria, results);
                 stack.pop();

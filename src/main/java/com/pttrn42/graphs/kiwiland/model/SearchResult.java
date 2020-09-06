@@ -1,6 +1,5 @@
 package com.pttrn42.graphs.kiwiland.model;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -17,12 +16,8 @@ public class SearchResult {
         this.trips = new HashSet<>();
     }
 
-    public Town source() {
-        return source;
-    }
-
-    public void append(Set<Town> stops, Integer distance) {
-        trips.add(new Trip(new ArrayList<>(stops), distance));
+    public void append(List<Town> stops, Integer distance) {
+        trips.add(new Trip(stops, distance));
     }
 
     public long size() {
