@@ -107,7 +107,6 @@ class NetworkTest {
     }
 
     @Test
-    @Disabled
     void multipleRoutes_multipleDirectedCycles() {
         Town a=new Town("A"), b=new Town("B"), c=new Town("C"), d=new Town("D"), e=new Town("E"), f=new Town("F");
 

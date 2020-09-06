@@ -39,7 +39,7 @@ class DepthFirstSearch implements Search {
                 LOG.fine(String.format("visited: %s", visited));
                 LOG.fine(String.format("stops: %s", stops));
                 if (nbOfStopsCriteria.test(stops.size())) {
-                    results.append(stops, traversalDelegate.distance(results.source(), stops.toArray(new Town[]{})));
+                    results.append(stops, traversalDelegate.distance(results.source(), stops));
                 }
                 stops.remove(r.to());
                 break;

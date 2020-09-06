@@ -23,7 +23,7 @@ public class Network {
     }
 
     public long shortest(Town from, Town to) {
-        return searchDelegate.search(from, to, __ -> true)
+        return searchDelegate.search(from, to, stackSize -> stackSize < 10)
                 .shortest();
     }
 

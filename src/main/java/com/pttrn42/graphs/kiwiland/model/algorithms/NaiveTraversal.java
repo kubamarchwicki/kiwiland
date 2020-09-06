@@ -16,15 +16,6 @@ class NaiveTraversal implements Traversal {
     }
 
     @Override
-    public Integer distance(Town source, Town... towns) {
-        Integer sumDistance = distance(source, towns[0]);
-        for (int i = 0; i<towns.length-1; i++) {
-            sumDistance += distance(towns[i], towns[i+1]);
-        }
-        return sumDistance;
-    }
-
-    @Override
     public Integer distance(Town... towns) {
         Integer sumDistance = 0;
         for (int i = 0; i<towns.length-1; i++) {
@@ -34,7 +25,7 @@ class NaiveTraversal implements Traversal {
     }
 
     private Integer distance(Town from, Town to) {
-        LOG.finer(String.format("Calculating route from (%s) to (%s)", from, to));
+        LOG.fine(String.format("Calculating route from (%s) to (%s)", from, to));
         return networkGraph.values().stream()
                 .flatMap(Collection::stream)
                 .filter(route -> route.from().equals(from) && route.to().equals(to))

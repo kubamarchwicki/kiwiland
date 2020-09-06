@@ -32,7 +32,7 @@ public class App {
 
         public LoggingConfig() {
             System.setProperty("java.util.logging.SimpleFormatter.format",
-                    "(%2$s) %5$s %6$s%n");
+                    "%5$s%6$s (%2$s)%n");
 
             final ConsoleHandler consoleHandler = new ConsoleHandler();
             consoleHandler.setLevel(Level.FINEST);
