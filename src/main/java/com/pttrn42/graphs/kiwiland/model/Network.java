@@ -34,7 +34,7 @@ public class Network {
 
     private SearchResult search(Town from, Town to, Predicate<Integer> nbOfStopsCriteria) {
         Set<Town> stops = new LinkedHashSet<>(), visited = new LinkedHashSet<>();
-        SearchResult results = new SearchResult();
+        SearchResult results = new SearchResult(from);
         search(from, to, visited, stops, nbOfStopsCriteria, results);
 
         return results;
@@ -49,7 +49,7 @@ public class Network {
                 LOG.fine(String.format("visited: %s", visited));
                 LOG.fine(String.format("stops: %s", stops));
                 if (nbOfStopsCriteria.test(stops.size())) {
-                    results.append(new SearchResult.Trip(new LinkedHashSet<>(stops), _distance(visited.stream().findFirst().get(), stops.toArray(new Town[]{}))));
+                    results.append(new SearchResult.Trip(new LinkedHashSet<>(stops), _distance(results.source(), stops.toArray(new Town[]{}))));
                 }
                 stops.remove(r.to());
                 break;

@@ -8,19 +8,30 @@ import java.util.logging.Logger;
 
 public class SearchResult {
     private final static Logger LOG = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+
     record Trip(Set<Town> stops, Integer distance){}
 
-    List<Trip> trips = new ArrayList<>();
+    private final Town source;
+    private final List<Trip> trips;
+
+    public SearchResult(Town source) {
+        this.source = source;
+        this.trips = new ArrayList<>();
+    }
+
+    Town source() {
+        return source;
+    }
 
     void append(Trip trip) {
         trips.add(trip);
     }
 
-    public long size() {
+    long size() {
         return trips.size();
     }
 
-    public long shortest() {
+    long shortest() {
         trips.forEach(s -> LOG.fine(s.toString()));
 
         return trips.stream()
