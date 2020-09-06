@@ -1,50 +1,61 @@
 package com.pttrn42.graphs.kiwiland.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Stack;
 import java.util.function.Predicate;
 
-import static java.util.Collections.*;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 
 public class Network {
     private final Map<Town, List<Route>> network = new HashMap<>();
+
+    public long shortest(Town from, Town to) {
+        return search(from, to, __ -> true)
+                .shortest();
+    }
 
     public long trips(Town from, Town to) {
         return trips(from, to, __ -> true);
     }
 
     public long trips(Town from, Town to, Predicate<Integer> nbOfStopsCriteria) {
-        Set<Town> stops = new LinkedHashSet<>(), visited = new LinkedHashSet<>();
-        List<Set<Town>> correctRoutes = new ArrayList<>();
-        search(from, to, visited, stops, nbOfStopsCriteria, correctRoutes);
-
-        return correctRoutes.size();
+        SearchResult results = search(from, to, nbOfStopsCriteria);
+        return results.size();
     }
 
-    private void search(Town from, Town to, Set<Town> visited, Set<Town> stops, Predicate<Integer> nbOfStopsCriteria, List<Set<Town>> correctRoutes) {
+    private SearchResult search(Town from, Town to, Predicate<Integer> nbOfStopsCriteria) {
+        Set<Town> stops = new LinkedHashSet<>(), visited = new LinkedHashSet<>();
+        SearchResult results = new SearchResult();
+        search(from, to, visited, stops, nbOfStopsCriteria, results);
+
+        return results;
+    }
+
+    private void search(Town from, Town to, Set<Town> visited, Set<Town> stops, Predicate<Integer> nbOfStopsCriteria, SearchResult results) {
         visited.add(from);
         for (Route r: network.getOrDefault(from, emptyList())) {
 //            System.out.println("routes from(" + from +"): " + r);
             stops.add(r.to());
             if (r.to().equals(to) && nbOfStopsCriteria.test(stops.size())) {
-                correctRoutes.add(stops);
+                System.out.println("visited = " + visited);
+                System.out.println("stops = " + stops);
+                results.append(new SearchResult.Trip(Set.copyOf(stops), _distance(visited.stream().findFirst().get(), stops.toArray(new Town[]{}))));
+                stops.remove(r.to());
                 return;
             }
 
+            stops.add(r.to());
             if (!visited.contains(r.to())) {
-                search(r.to(), to, visited, stops, nbOfStopsCriteria, correctRoutes);
+                search(r.to(), to, visited, stops, nbOfStopsCriteria, results);
             }
-
             stops.remove(r.to());
         }
 
@@ -55,17 +66,29 @@ public class Network {
         //TODO: maybe try monad?
         //TODO: more functional approach
         try {
-            Integer sumDistance = 0;
-            for (int i = 0; i<towns.length-1; i++) {
-                sumDistance += distance(towns[i], towns[i+1]);
-            }
-            return sumDistance.toString();
+            return _distance(towns).toString();
         } catch (NoSuchRouteException ex) {
             return ex.getMessage();
         }
     }
 
-    private Integer distance(Town from, Town to) {
+    private Integer _distance(Town source, Town... towns) {
+        Integer sumDistance = _distance(source, towns[0]);
+        for (int i = 0; i<towns.length-1; i++) {
+            sumDistance += _distance(towns[i], towns[i+1]);
+        }
+        return sumDistance;
+    }
+
+    private Integer _distance(Town... towns) {
+        Integer sumDistance = 0;
+        for (int i = 0; i<towns.length-1; i++) {
+            sumDistance += _distance(towns[i], towns[i+1]);
+        }
+        return sumDistance;
+    }
+
+    private Integer _distance(Town from, Town to) {
         return network.values().stream()
                 .flatMap(Collection::stream)
                 .filter(route -> route.from().equals(from) && route.to().equals(to))

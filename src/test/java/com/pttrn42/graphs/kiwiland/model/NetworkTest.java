@@ -105,6 +105,13 @@ class NetworkTest {
         Assertions.assertEquals(2, trips);
     }
 
+    @Test
+    void multipleRoutes_findShortest_returns6() {
+        Network routes = multipleRoutes();
+        var trips = routes.shortest(new Town("A"), new Town("E"));
+        Assertions.assertEquals(7, trips);
+    }
+
     Network multipleRoutes() {
         Town a=new Town("A"), b=new Town("B"), c=new Town("C"), d=new Town("D"), e=new Town("E");
 
