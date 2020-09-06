@@ -1,7 +1,6 @@
 package com.pttrn42.graphs.kiwiland.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -10,11 +9,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 
 public class Network {
+    private final static Logger LOG = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     private final Map<Town, List<Route>> network = new HashMap<>();
 
     public long shortest(Town from, Town to) {
@@ -42,11 +43,11 @@ public class Network {
     private void search(Town from, Town to, Set<Town> visited, Set<Town> stops, Predicate<Integer> nbOfStopsCriteria, SearchResult results) {
         visited.add(from);
         for (Route r: network.getOrDefault(from, emptyList())) {
-            System.out.println("routes from(" + from +"): " + r);
+            LOG.fine(String.format("routes from(%s): %s", from, r));
             if (r.to().equals(to)) {
                 stops.add(r.to());
-                System.out.println("visited = " + visited);
-                System.out.println("stops = " + stops);
+                LOG.fine(String.format("visited: %s", visited));
+                LOG.fine(String.format("stops: %s", stops));
                 if (nbOfStopsCriteria.test(stops.size())) {
                     results.append(new SearchResult.Trip(new LinkedHashSet<>(stops), _distance(visited.stream().findFirst().get(), stops.toArray(new Town[]{}))));
                 }
@@ -91,7 +92,7 @@ public class Network {
     }
 
     private Integer _distance(Town from, Town to) {
-        System.out.println("Calculating route from = " + from + " to = " + to);
+        LOG.finer(String.format("Calculating route from (%s) to (%s)", from, to));
         return network.values().stream()
                 .flatMap(Collection::stream)
                 .filter(route -> route.from().equals(from) && route.to().equals(to))
