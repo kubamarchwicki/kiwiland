@@ -4,7 +4,7 @@ import com.pttrn42.graphs.kiwiland.model.Network;
 import com.pttrn42.graphs.kiwiland.model.Town;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NetworkParserTest {
 

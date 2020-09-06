@@ -1,7 +1,7 @@
 package com.pttrn42.graphs;
 
-import com.pttrn42.graphs.kiwiland.model.Route;
 import com.pttrn42.graphs.kiwiland.model.Network;
+import com.pttrn42.graphs.kiwiland.model.Route;
 import com.pttrn42.graphs.kiwiland.model.Town;
 
 import java.util.Objects;

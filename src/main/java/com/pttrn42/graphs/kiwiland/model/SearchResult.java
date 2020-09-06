@@ -2,14 +2,15 @@ package com.pttrn42.graphs.kiwiland.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
 public class SearchResult {
-    private final static Logger LOG = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-
     record Trip(Set<Town> stops, Integer distance){}
+
+    private final static Logger LOG = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     private final Town source;
     private final List<Trip> trips;
@@ -19,19 +20,19 @@ public class SearchResult {
         this.trips = new ArrayList<>();
     }
 
-    Town source() {
+    public Town source() {
         return source;
     }
 
-    void append(Trip trip) {
-        trips.add(trip);
+    public void append(Set<Town> stops, Integer distance) {
+        trips.add(new Trip(new LinkedHashSet<>(stops), distance));
     }
 
-    long size() {
+    public long size() {
         return trips.size();
     }
 
-    long shortest() {
+    public long shortest() {
         trips.forEach(s -> LOG.fine(s.toString()));
 
         return trips.stream()

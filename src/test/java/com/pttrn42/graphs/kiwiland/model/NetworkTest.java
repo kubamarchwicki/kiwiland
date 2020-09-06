@@ -1,6 +1,7 @@
 package com.pttrn42.graphs.kiwiland.model;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class NetworkTest {
@@ -103,6 +104,27 @@ class NetworkTest {
         Network routes = multipleRoutes();
         var trips = routes.trips(new Town("A"), new Town("F"), stops -> stops == 3);
         Assertions.assertEquals(1, trips);
+    }
+
+    @Test
+    @Disabled
+    void multipleRoutes_multipleDirectedCycles() {
+        Town a=new Town("A"), b=new Town("B"), c=new Town("C"), d=new Town("D"), e=new Town("E"), f=new Town("F");
+
+        Network routes = new Network()
+                .addRoute(new Route(a, b, 1))
+                .addRoute(new Route(b, c, 2))
+                .addRoute(new Route(b, d, 3))
+                .addRoute(new Route(d, b, 4))
+                .addRoute(new Route(c, e, 4))
+                .addRoute(new Route(e, b, 1))
+                .addRoute(new Route(e, f, 2))
+                .addRoute(new Route(d, f, 4))
+                .addRoute(new Route(a, f, 10))
+                .addRoute(new Route(e, d, 4));
+
+        var trips = routes.trips(new Town("B"), new Town("B"));
+        Assertions.assertEquals(3, trips);
     }
 
     @Test

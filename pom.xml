@@ -53,7 +53,7 @@
                     <argLine>--enable-preview</argLine>
                     <systemPropertyVariables>
                         <java.util.logging.config.class>
-                            com.pttrn42.graphs.LoggingConfig
+                            com.pttrn42.graphs.App$LoggingConfig
                         </java.util.logging.config.class>
                     </systemPropertyVariables>
 
