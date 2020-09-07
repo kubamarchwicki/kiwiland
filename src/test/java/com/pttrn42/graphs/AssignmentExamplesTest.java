@@ -65,7 +65,7 @@ public class AssignmentExamplesTest {
 
     @Test
     void ex_10() {
-        long trips = routes.trips(t("C"), t("C"), __ -> true, trip -> trip.distance() < 30);
+        long trips = routes.trips(t("C"), t("C"), __ -> true, trip -> trip.distance() <= 30);
         Assertions.assertEquals(7, trips);
     }
 

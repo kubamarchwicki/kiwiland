@@ -4,13 +4,11 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class SearchResult {
     public record Trip(List<Town> stops, Integer distance){}
 
-    private final AtomicBoolean valid = new AtomicBoolean(true);
     private final Town source;
     private final Set<Trip> trips;
     private final Predicate<Trip> validResult;
@@ -21,14 +19,15 @@ public class SearchResult {
         this.validResult = validResult;
     }
 
-    public void append(List<Town> stops, Integer distance) {
+    public boolean append(List<Town> stops, Integer distance) {
         Trip trip = new Trip(stops, distance);
 
-        if (!validResult.test(trip)) {
-            this.valid.set(false);
-        } else {
-            trips.add(trip);
+        System.out.println("distance=" + distance + " is valid=" + validResult.test(trip));
+        if (validResult.test(trip)) {
+            return trips.add(trip);
         }
+
+        return false;
     }
 
     public long size() {
@@ -43,15 +42,14 @@ public class SearchResult {
                 .orElse(Integer.MAX_VALUE);
     }
 
-    public boolean valid() {
-        return valid.get();
-    }
-
     @Override
     public String toString() {
+        StringBuilder b = new StringBuilder();
+        trips.forEach(t -> b.append("\n\t\t").append(t.toString()));
         return "SearchResult{" +
                 "\n\tsource=" + source +
-                "\n\ttrips=" + trips +
+                "\n\ttrips=[" + b.toString() +
+                "\n\t]" +
                 '}';
     }
 }

@@ -46,12 +46,15 @@ class FindPathsWithCyclesSearch implements Search {
             if (last.equals(r.to()) && nbOfStopsCriteria.test(stack.size())) {
                 List<Town> completeRoute = new ArrayList<>(stack);
                 completeRoute.add(r.to());
-                results.append(new ArrayList<>(completeRoute), traversalDelegate.distance(completeRoute));
+                if (results.append(new ArrayList<>(completeRoute), traversalDelegate.distance(completeRoute))) {
+                    stack.add(r.to());
+                    search(stack, last, nbOfStopsCriteria, results);
+                    stack.pop();
+                }
             }
 
             if (!stack.contains(r.to())
-                    || ALLOW_MULTIPLE_LOOPS.and(nbOfStopsCriteria.negate()).test(stack.size())
-                    || (ALLOW_MULTIPLE_LOOPS.test(stack.size()) && !results.valid())) {
+                    || ALLOW_MULTIPLE_LOOPS.and(nbOfStopsCriteria.negate()).test(stack.size())) {
                 stack.add(r.to());
                 search(stack, last, nbOfStopsCriteria, results);
                 stack.pop();
