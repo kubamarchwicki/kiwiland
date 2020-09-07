@@ -6,5 +6,8 @@ import com.pttrn42.graphs.kiwiland.model.Town;
 import java.util.function.Predicate;
 
 public interface Search {
-    SearchResult search(Town from, Town to, Predicate<Integer> nbOfStopsCriteria);
+    default SearchResult search(Town from, Town to, Predicate<Integer> nbOfStopsCriteria) {
+        return search(from, to, nbOfStopsCriteria, __ -> true);
+    }
+    SearchResult search(Town from, Town to, Predicate<Integer> nbOfStopsCriteria, Predicate<SearchResult.Trip> validResult);
 }

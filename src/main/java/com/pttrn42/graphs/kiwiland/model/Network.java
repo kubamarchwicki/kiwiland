@@ -36,6 +36,11 @@ public class Network {
                 .size();
     }
 
+    public long trips(Town from, Town to, Predicate<Integer> nbOfStopsCriteria, Predicate<SearchResult.Trip> validResult) {
+        return searchDelegate.search(from, to, nbOfStopsCriteria, validResult)
+                .size();
+    }
+
     public String distance(Town... towns) {
         //TODO: maybe try monad?
         //TODO: more functional approach

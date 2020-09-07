@@ -6,9 +6,7 @@ import com.pttrn42.graphs.kiwiland.model.SearchResult;
 import com.pttrn42.graphs.kiwiland.model.Town;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.Stack;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -26,8 +24,8 @@ class FindPathsWithCyclesSearch implements Search {
         this.traversalDelegate = delegate;
     }
 
-    public SearchResult search(Town from, Town to, Predicate<Integer> nbOfStopsCriteria) {
-        SearchResult results = new SearchResult(from);
+    public SearchResult search(Town from, Town to, Predicate<Integer> nbOfStopsCriteria, Predicate<SearchResult.Trip> validResult) {
+        SearchResult results = new SearchResult(from, validResult);
 
         Stack<Town> stack = new Stack<>();
         stack.add(from);
@@ -52,7 +50,8 @@ class FindPathsWithCyclesSearch implements Search {
             }
 
             if (!stack.contains(r.to())
-                    || ALLOW_MULTIPLE_LOOPS.and(nbOfStopsCriteria.negate()).test(stack.size())) {
+                    || ALLOW_MULTIPLE_LOOPS.and(nbOfStopsCriteria.negate()).test(stack.size())
+                    || (ALLOW_MULTIPLE_LOOPS.test(stack.size()) && !results.valid())) {
                 stack.add(r.to());
                 search(stack, last, nbOfStopsCriteria, results);
                 stack.pop();

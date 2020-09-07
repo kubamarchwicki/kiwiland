@@ -4,20 +4,31 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 public class SearchResult {
-    record Trip(List<Town> stops, Integer distance){}
+    public record Trip(List<Town> stops, Integer distance){}
 
+    private final AtomicBoolean valid = new AtomicBoolean(true);
     private final Town source;
     private final Set<Trip> trips;
+    private final Predicate<Trip> validResult;
 
-    public SearchResult(Town source) {
+    public SearchResult(Town source, Predicate<Trip> validResult) {
         this.source = source;
         this.trips = new HashSet<>();
+        this.validResult = validResult;
     }
 
     public void append(List<Town> stops, Integer distance) {
-        trips.add(new Trip(stops, distance));
+        Trip trip = new Trip(stops, distance);
+
+        if (!validResult.test(trip)) {
+            this.valid.set(false);
+        } else {
+            trips.add(trip);
+        }
     }
 
     public long size() {
@@ -30,6 +41,10 @@ public class SearchResult {
                 .map(Trip::distance)
                 .findFirst()
                 .orElse(Integer.MAX_VALUE);
+    }
+
+    public boolean valid() {
+        return valid.get();
     }
 
     @Override
