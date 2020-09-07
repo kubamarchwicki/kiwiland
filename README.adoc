@@ -1,0 +1,6 @@
+# kiwiland
+
+This project uses JDK14 with preview features (records).
+
+.Running the project
+`mvn clean package exec:java` will build the project and execute sample data.
